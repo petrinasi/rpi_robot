@@ -10,6 +10,16 @@ import RPi.GPIO as GPIO   #The GPIO module
 #Dryrun mode for testing without motors and GPIO
 DRYRUN = True
 
+def calibrateTilt(acc):
+    #Now left and right
+    #You get a 3 tuple and the middle value is what you need.
+    #Horizontal is 120.  Going right decreases the value so < 110 is steer right.  Going left increases the value so > 130 is steer left
+    #SteerRightValue = 115
+    #SteerLeftValue = 135
+    
+    return acc-10, acc+10
+
+
 #A routine to control the pins
 def ControlThePins(TheState):
     print "Controlling them pins:c" + TheState
@@ -94,12 +104,6 @@ RotateRight = "RR"
 SystemStopped = "SS"
 SystemState = SystemStopped
 
-#Now left and right
-#You get a 3 tuple and the middle value is what you need.
-#Horizontal is 120.  Going right decreases the value so < 110 is steer right.  Going left increases the value so > 130 is steer left
-SteerRightValue = 115
-SteerLeftValue = 135
-
 #Control camera:
 # BTN_B takes photo
 # BTN_A start/stop video recording
@@ -133,6 +137,7 @@ while not wm:
         i +=1
         #Pause for a bit
         time.sleep(0.5)
+
 
 #Got here, tell the user
 print "Success - we have connected!"
@@ -174,6 +179,11 @@ wm.rumble = True
 time.sleep(0.5)
 wm.rumble = False
 
+#Calibrate tilt
+SteerRightValue, SteerLeftValue = calibrateTilt(int(wm.state['acc'][1]))
+print "SteerLeftValue " + str(SteerLeftValue)
+print "SteerRightValue " + str(SteerRightValue)
+
 #Now start checking for button presses
 print "Ready to receive button presses and accelerometer input"
 
@@ -188,7 +198,7 @@ try:
 
         #We assess whether the Wiimote is level, left or right by assessing the accelerometer
         accVar = int(wm.state['acc'][1])
-        print "Accelerometer == " + str(accVar)
+        #print "Accelerometer == " + str(accVar)
 
         #Check all the different possible states of button, accelerometer and system state.  First button 1 pressed and steering left
         if (buttons & cwiid.BTN_2) and (accVar > SteerLeftValue) and (SystemState != ForwardSteerLeft):
