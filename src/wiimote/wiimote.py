@@ -8,7 +8,7 @@ import os
 import RPi.GPIO as GPIO   #The GPIO module
 
 #Dryrun mode for testing without motors and GPIO
-DRYRUN = True
+DRYRUN = False
 
 def calibrateTilt(acc):
     #Now left and right
@@ -17,7 +17,7 @@ def calibrateTilt(acc):
     #SteerRightValue = 115
     #SteerLeftValue = 135
     
-    return acc-10, acc+10
+    return acc-8, acc+8
 
 
 #A routine to control the pins
@@ -219,7 +219,7 @@ try:
 
             #Set the motor state
             ControlThePins(SteerRight)
-        elif (buttons & cwiid.BTN_2) and (accVar >= SteerRightValue) and (accVar) and (SystemState != ForwardNoSteer):   #Button 1 pressed.  Acclerometer in the middle
+        elif (buttons & cwiid.BTN_2) and (accVar >= SteerRightValue) and (accVar <= SteerLeftValue) and (SystemState != ForwardNoSteer):   #Button 1 pressed.  Acclerometer in the middle
             #Tell the user
             print "Go forward"
 
@@ -266,9 +266,14 @@ try:
 
             #Change the motor state to be off
             ControlThePins(StopIt)
+	    
+        #check if '+' and '-' are pressed to stop the program
+        elif (buttons & cwiid.BTN_MINUS) and (buttons & cwiid.BTN_PLUS):
+            print "+ and - pressed"
+            break
 
         #Chill for a bit
-        time.sleep(0.4)
+        time.sleep(0.3)
 except KeyboardInterrupt:
     pass
 
