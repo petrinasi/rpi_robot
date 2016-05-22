@@ -6,9 +6,13 @@ import cwiid
 import time
 import os
 import RPi.GPIO as GPIO   #The GPIO module
+import picamera
+import datetime
+from time import sleep
 
 #Dryrun mode for testing without motors and GPIO
 DRYRUN = False
+RecordingStarted = False
 
 def calibrateTilt(acc):
     #Now left and right
@@ -105,18 +109,30 @@ SystemStopped = "SS"
 SystemState = SystemStopped
 
 #Control camera:
-# BTN_B takes photo
-# BTN_A start/stop video recording
+# BTN_A takes photo
+# BTN_B start/stop video recording
 def cameraControl():
 
     #if B start/stop video rec
     #if A pressed take photo
 
-    pass
+    if buttons & cwiid.BTN_A:
+        print "take picture"
+        with picamera.PiCamera() as camera:
+            filename = "rpi_robot_" + datetime.datetime.now().strftime("%H:%M:%S") + ".jpg"
+            camera.resolution = (1280, 720)
+            camera.start_preview()
+            #camera.exposure_compensation = 2
+            #camera.exposure_mode = 'spotlight'
+            #camera.meter_mode = 'matrix'
+            #camera.image_effect = 'gpen'
+            # Give the camera some time to adjust to conditions
+            sleep(0.5)
+            camera.capture(filename)
+            camera.stop_preview()
+    else:
+        print "start/stop video"
 
-
-#Make the Bluetooth dongle discoverable
-#os.system("sudo hciconfig hci0 piscan")
 
 #connecting to the Wiimote. This allows several attempts
 # as first few often fail.
@@ -169,18 +185,13 @@ wm.led = 0
 #Wait a bit
 time.sleep(0.5)
 
-#Count in binary on the LEDs
-#for i in range(16):
-#wm.led = i
-#time.sleep(0.5)
-
 #Do a rumble
 wm.rumble = True
 time.sleep(0.5)
 wm.rumble = False
 
 #Calibrate tilt
-SteerRightValue, SteerLeftValue = calibrateTilt(int(wm.state['acc'][1]))
+SteerLeftValue, SteerRightValue = calibrateTilt(int(wm.state['acc'][1]))
 print "SteerLeftValue " + str(SteerLeftValue)
 print "SteerRightValue " + str(SteerRightValue)
 
@@ -194,11 +205,9 @@ try:
     while True:
         #Set up a button object to check
         buttons = wm.state['buttons']
-        #print "Button " + str(buttons)
 
         #We assess whether the Wiimote is level, left or right by assessing the accelerometer
         accVar = int(wm.state['acc'][1])
-        #print "Accelerometer == " + str(accVar)
 
         #Check all the different possible states of button, accelerometer and system state.  First button 1 pressed and steering left
         if (buttons & cwiid.BTN_2) and (accVar > SteerLeftValue) and (SystemState != ForwardSteerLeft):
@@ -272,8 +281,13 @@ try:
             print "+ and - pressed"
             break
 
+        #Check other buttons when stopped
+        elif ((buttons & cwiid.BTN_A) or (buttons & cwiid.BTN_B)) and (SystemState == SystemStopped):
+            print "Cameracontrol"
+            cameraControl()
+
         #Chill for a bit
-        time.sleep(0.3)
+        time.sleep(0.1)
 except KeyboardInterrupt:
     pass
 
