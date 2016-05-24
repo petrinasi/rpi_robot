@@ -28,8 +28,6 @@ GoForward = "Forward"
 GoBackward = "Backward"
 SteerRight = "Right"
 SteerLeft = "Left"
-RotateRight = "RotateRight"
-RotateLeft = "RotateLeft"
 StopIt = "Stop"
 
 class robot_control(object):

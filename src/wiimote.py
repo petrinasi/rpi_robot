@@ -191,7 +191,7 @@ time.sleep(0.5)
 wm.rumble = False
 
 #Calibrate tilt
-SteerLeftValue, SteerRightValue = calibrateTilt(int(wm.state['acc'][1]))
+SteerRightValue, SteerLeftValue = calibrateTilt(int(wm.state['acc'][1]))
 print "SteerLeftValue " + str(SteerLeftValue)
 print "SteerRightValue " + str(SteerRightValue)
 
