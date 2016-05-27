@@ -108,31 +108,6 @@ RotateRight = "RR"
 SystemStopped = "SS"
 SystemState = SystemStopped
 
-#Control camera:
-# BTN_A takes photo
-# BTN_B start/stop video recording
-def cameraControl():
-
-    #if B start/stop video rec
-    #if A pressed take photo
-
-    if buttons & cwiid.BTN_A:
-        print "take picture"
-        with picamera.PiCamera() as camera:
-            filename = "rpi_robot_" + datetime.datetime.now().strftime("%H:%M:%S") + ".jpg"
-            camera.resolution = (1280, 720)
-            camera.start_preview()
-            #camera.exposure_compensation = 2
-            #camera.exposure_mode = 'spotlight'
-            #camera.meter_mode = 'matrix'
-            #camera.image_effect = 'gpen'
-            # Give the camera some time to adjust to conditions
-            sleep(0.5)
-            camera.capture(filename)
-            camera.stop_preview()
-    else:
-        print "start/stop video"
-
 
 #connecting to the Wiimote. This allows several attempts
 # as first few often fail.
@@ -280,11 +255,6 @@ try:
         elif (buttons & cwiid.BTN_MINUS) and (buttons & cwiid.BTN_PLUS):
             print "+ and - pressed"
             break
-
-        #Check other buttons when stopped
-        elif ((buttons & cwiid.BTN_A) or (buttons & cwiid.BTN_B)) and (SystemState == SystemStopped):
-            print "Cameracontrol"
-            cameraControl()
 
         #Chill for a bit
         time.sleep(0.1)

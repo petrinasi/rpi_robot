@@ -43,11 +43,11 @@ _DEFAULT_DRY_RUN_MODE=False
 # The L293D chip also has an "enable" pin - a dead man's handle;
 # if the enable pin is off, the other pins are ignored.
 # Here we define which GPIO pins do what
-_GPIO_PIN_RIGHT_MOTOR_FORWARD=4
-_GPIO_PIN_RIGHT_MOTOR_BACKWARD=17
-_GPIO_PIN_LEFT_MOTOR_FORWARD=25
-_GPIO_PIN_LEFT_MOTOR_BACKWARD=24
-_GPIO_PIN_ENABLE=22
+_GPIO_PIN_RIGHT_MOTOR_FORWARD=11
+_GPIO_PIN_RIGHT_MOTOR_BACKWARD=13
+_GPIO_PIN_LEFT_MOTOR_FORWARD=19
+_GPIO_PIN_LEFT_MOTOR_BACKWARD=21
+# _GPIO_PIN_ENABLE=22
 
 # Next we define how long a "step" is. A step is defined
 # in terms of milliseconds (thousandths of a second).
@@ -98,16 +98,16 @@ _TURN_BIAS=100
 
 # Set up the GPIO pins, referring to the constants
 gpio.setwarnings(False)
-gpio.setmode(gpio.BCM)
+gpio.setmode(gpio.BOARD)
 gpio.setup(_GPIO_PIN_RIGHT_MOTOR_FORWARD, gpio.OUT)
 gpio.setup(_GPIO_PIN_RIGHT_MOTOR_BACKWARD, gpio.OUT)
 gpio.setup(_GPIO_PIN_LEFT_MOTOR_FORWARD, gpio.OUT)
 gpio.setup(_GPIO_PIN_LEFT_MOTOR_BACKWARD, gpio.OUT)
-gpio.setup(_GPIO_PIN_ENABLE, gpio.OUT)
+# gpio.setup(_GPIO_PIN_ENABLE, gpio.OUT)
 
 #### Objects ####
 
-class ArthurBot(object):
+class PiBot(object):
     # We need to keep a track of instances,
     # since we should only ever have one.
     # You could adapt this program to have more
@@ -132,8 +132,6 @@ class ArthurBot(object):
             for step in range(0,units):
                 print "Forward"
         else:
-            # Turn on the enable pin
-            gpio.output(_GPIO_PIN_ENABLE, True)
             for step in range(0,units):
                 print "Forward"
                 gpio.output(_GPIO_PIN_LEFT_MOTOR_FORWARD, True)
@@ -155,8 +153,8 @@ class ArthurBot(object):
                 # Now turn off the left motor, even if
                 # we already turned it off early
                 gpio.output(_GPIO_PIN_LEFT_MOTOR_FORWARD, False)
-            # Turn off the enable pin
-            gpio.output(_GPIO_PIN_ENABLE, False)
+            # Turn off all pins
+            self._stop()
 
     # Move backward so many units
     def backward(self,units):
@@ -166,8 +164,6 @@ class ArthurBot(object):
                 self._waitStepPreBias()
                 self._waitStepBias()
         else:
-            # Turn on the enable pin
-            gpio.output(_GPIO_PIN_ENABLE, True)
             for step in range(0,units):
                 print "Backward"
                 gpio.output(_GPIO_PIN_LEFT_MOTOR_FORWARD, False)
@@ -189,8 +185,8 @@ class ArthurBot(object):
                 # Now turn off the left motor, even if
                 # we already turned it off early
                 gpio.output(_GPIO_PIN_LEFT_MOTOR_BACKWARD, False)
-            # Turn off the enable pin
-            gpio.output(_GPIO_PIN_ENABLE, False)
+            # Turn off all pins
+            self._stop()
 
     # Move right so many units
     # To move right, we put the right motor into reverse
@@ -203,8 +199,6 @@ class ArthurBot(object):
                 self._waitTurnPreBias()
                 self._waitTurnBias()
         else:
-            # Turn on the enable pin
-            gpio.output(_GPIO_PIN_ENABLE, True)
             for step in range(0,units):
                 print "Right"
                 gpio.output(_GPIO_PIN_LEFT_MOTOR_FORWARD, True)
@@ -226,8 +220,8 @@ class ArthurBot(object):
                 # Now turn off the left motor, even if
                 # we already turned it off early
                 gpio.output(_GPIO_PIN_LEFT_MOTOR_FORWARD, False)
-            # Turn off the enable pin
-            gpio.output(_GPIO_PIN_ENABLE, False)
+            # Turn off all pins
+            self._stop()
 
     # Move left so many units
     # To move left, we put the right motor into forward
@@ -238,8 +232,6 @@ class ArthurBot(object):
             for step in range(0,units):
                 print "Left"
         else:
-            # Turn on the enable pin
-            gpio.output(_GPIO_PIN_ENABLE, True)
             for step in range(0,units):
                 print "Left"
                 gpio.output(_GPIO_PIN_LEFT_MOTOR_FORWARD, False)
@@ -261,8 +253,8 @@ class ArthurBot(object):
                 # Now turn off the left motor, even if
                 # we already turned it off early
                 gpio.output(_GPIO_PIN_LEFT_MOTOR_BACKWARD, False)
-            # Turn off the enable pin
-            gpio.output(_GPIO_PIN_ENABLE, False)
+            # Turn off all pins
+            self._stop()
 
     # Stop all the motors and turn off the enable pin
     # The movement methods should all do this when they exit
@@ -273,7 +265,6 @@ class ArthurBot(object):
             if ( self.dryRunMode ):
                 print "All Stop"
             else:
-                gpio.output(_GPIO_PIN_ENABLE, False)
                 gpio.output(_GPIO_PIN_LEFT_MOTOR_FORWARD, False)
                 gpio.output(_GPIO_PIN_LEFT_MOTOR_BACKWARD, False)
                 gpio.output(_GPIO_PIN_RIGHT_MOTOR_FORWARD, False)
@@ -299,6 +290,12 @@ class ArthurBot(object):
     def _waitTurnBias(self):
         time.sleep(abs(_TURN_BIAS)/1000.0)
         pass
+
+    def _stop(self):
+        gpio.output(_GPIO_PIN_LEFT_MOTOR_FORWARD, False)
+        gpio.output(_GPIO_PIN_LEFT_MOTOR_BACKWARD, False)
+        gpio.output(_GPIO_PIN_RIGHT_MOTOR_FORWARD, False)
+        gpio.output(_GPIO_PIN_RIGHT_MOTOR_BACKWARD, False)
 
     def takePhoto(self,destination=os.getcwd(),fileprefix="arthurbot"):
         if ( self.dryRunMode ):
