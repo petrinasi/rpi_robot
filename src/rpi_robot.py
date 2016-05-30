@@ -20,6 +20,7 @@ def main(args):
 
             # Expexted data is "command units"
             command = data.split()
+            command[1] = int(command[1])
 
             if (command[0] == "STOP"):
                 ab.allStop()
