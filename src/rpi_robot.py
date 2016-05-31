@@ -18,9 +18,12 @@ def main(args):
             data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
             print "received message:", data
 
-            # Expexted data is "command units"
+            # Expexted data is "command (str) units (int)"
             command = data.split()
-            command[1] = int(command[1])
+            if len(command < 2):
+                command.append(1)
+            else:
+                command[1] = int(command[1])
 
             if (command[0] == "STOP"):
                 ab.allStop()
@@ -40,7 +43,8 @@ def main(args):
             elif (command[0] == "EXIT"):
                 ab.allStop
                 break
-            else: break
+            else:
+                print "Unkown command."
 
     finally:
         sock.close()
