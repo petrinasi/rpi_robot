@@ -26,18 +26,18 @@ def main(args):
             command_len = len(commands)
 
             for i in range(0, command_len, 2):
-
+                steps = int(commands[i+1])
                 if (commands[i] == "FORWARD" or commands[i] == 'E'):
-                    ab.forward(commands[i+1])
+                    ab.forward(steps)
                     print data
                 elif (commands[i] == "RIGHT" or commands[i] == 'O'):
-                    ab.right(commands[i+1])
+                    ab.right(steps)
                     print data
                 elif (commands[i] == "LEFT"  or commands[i] == 'V'):
-                    ab.left(commands[i+1])
+                    ab.left(steps)
                     print data
                 elif (commands[i] == "BACKWARD" or commands[i] == 'T'):
-                    ab.backward(commands[i+1])
+                    ab.backward(steps)
                     print data
                 elif (commands[i] == "EXIT" or commands[i] == 'X'):
                     ab.allStop
