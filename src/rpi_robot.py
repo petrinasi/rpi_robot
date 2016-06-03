@@ -18,33 +18,36 @@ def main(args):
             data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
             print "received message:", data
 
-            # Expexted data is "command (str) units (int)"
-            command = data.split()
-            if len(command < 2):
-                command.append(1)
-            else:
-                command[1] = int(command[1])
+            # Expexted data is "command (str) units (int), command (str) units (int), ..."
+            # Remove commas from string
+            data = data.replace(",", "")
 
-            if (command[0] == "STOP"):
-                ab.allStop()
-                print data
-            elif (command[0] == "FORWARD"):
-                ab.forward(command[1])
-                print data
-            elif (command[0] == "RIGHT"):
-                ab.right(command[1])
-                print data
-            elif (command[0] == "LEFT"):
-                ab.left(command[1])
-                print data
-            elif (command[0] == "BACKWARD"):
-                ab.backward(command[1])
-                print data
-            elif (command[0] == "EXIT"):
+            commands = data.split()
+            command_len = len(commands)
+
+            for i in range(0, command_len, 2):
+
+                if (commands[i] == "FORWARD" or commands[i] == 'E'):
+                    ab.forward(commands[i+1])
+                    print data
+                elif (commands[i] == "RIGHT" or commands[i] == 'O'):
+                    ab.right(commands[i+1])
+                    print data
+                elif (commands[i] == "LEFT"  or commands[i] == 'V'):
+                    ab.left(commands[i+1])
+                    print data
+                elif (commands[i] == "BACKWARD" or commands[i] == 'T'):
+                    ab.backward(commands[i+1])
+                    print data
+                elif (commands[i] == "EXIT" or commands[i] == 'X'):
+                    ab.allStop
+                    break
+                else:
+                    print "Unkown command."
+
+            if (commands[0] == "EXIT" or commands[0] == 'X'):
                 ab.allStop
                 break
-            else:
-                print "Unkown command."
 
     finally:
         sock.close()
