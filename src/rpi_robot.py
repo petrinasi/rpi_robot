@@ -20,10 +20,14 @@ def main(args):
 
             # Expexted data is "command (str) units (int), command (str) units (int), ..."
             # Remove commas from string
-            data = data.replace(",", "")
+            data = data.replace(",", "").upper()
 
             commands = data.split()
             command_len = len(commands)
+
+            if (commands[0] == "EXIT" or commands[0] == 'X'):
+                ab.allStop
+                break
 
             for i in range(0, command_len, 2):
                 steps = int(commands[i+1])
@@ -39,16 +43,8 @@ def main(args):
                 elif (commands[i] == "BACKWARD" or commands[i] == 'T'):
                     ab.backward(steps)
                     print data
-                elif (commands[i] == "EXIT" or commands[i] == 'X'):
-                    ab.allStop
-                    break
                 else:
                     print "Unkown command."
-
-            if (commands[0] == "EXIT" or commands[0] == 'X'):
-                ab.allStop
-                break
-
     finally:
         sock.close()
         print "Socket closed."

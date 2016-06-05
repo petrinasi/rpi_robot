@@ -67,7 +67,7 @@ _STEP_DURATION=1000
 # whatever suits your project. I doubt you'll get much finer
 # control than approximately 15 degrees. If you can hand-build
 # a robot that can travel in a perfect square, well done you!
-_TURN_DURATION=750
+_TURN_DURATION=1600
 
 # "Bias" is a tweak for where you have one motor (or
 # gearing) which is slightly stronger than the other - which
@@ -84,7 +84,7 @@ _TURN_DURATION=750
 # Veering left? Use a positive value.
 # Value is in milliseconds. Try 100 for starters.
 _STEP_BIAS=0
-_TURN_BIAS=100
+_TURN_BIAS=0
 
 # That's the end of the configuration. You should not need
 # to change anything past this point. Of course, you *can*
